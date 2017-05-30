@@ -73,9 +73,11 @@ class ProductProcessor extends AbstractProcessor implements ItemProcessorInterfa
      */
     public function process($item)
     {
+        $jobParameters = $this->stepExecution->getJobParameters();
+
         $itemHasStatus = isset($item['enabled']);
         if (!isset($item['enabled'])) {
-            $item['enabled'] = $jobParameters = $this->stepExecution->getJobParameters()->get('enabled');
+            $item['enabled'] = $jobParameters->get('enabled');
         }
 
         $identifier = $this->getIdentifier($item);
@@ -93,7 +95,6 @@ class ProductProcessor extends AbstractProcessor implements ItemProcessorInterfa
             unset($filteredItem['enabled']);
         }
 
-        $jobParameters = $this->stepExecution->getJobParameters();
         $enabledComparison = $jobParameters->get('enabledComparison');
         if ($enabledComparison) {
             $filteredItem = $this->filterIdenticalData($product, $filteredItem);

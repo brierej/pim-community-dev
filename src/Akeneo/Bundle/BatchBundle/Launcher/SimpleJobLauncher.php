@@ -78,7 +78,7 @@ class SimpleJobLauncher implements JobLauncherInterface
 
         $encodedConfiguration = json_encode($configuration, JSON_HEX_APOS);
         $cmd = sprintf(
-            '%s %s/console akeneo:batch:job --env=%s %s %s %s %s >> %s/batch_execute.log 2>&1',
+            '%s %s/console akeneo:batch:job --env=%s %s %s %s %s %s >> %s/batch_execute.log 2>&1',
             $pathFinder->find(),
             $this->rootDir,
             $this->environment,
@@ -86,6 +86,7 @@ class SimpleJobLauncher implements JobLauncherInterface
             escapeshellarg($jobInstance->getCode()),
             $executionId,
             !empty($configuration) ? sprintf('--config=%s', escapeshellarg($encodedConfiguration)) : '',
+            '--username=' . $user->getUsername(),
             $this->logDir
         );
 

@@ -17,6 +17,7 @@ use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
+use Symfony\Component\Security\Core\Authentication\Token\UsernamePasswordToken;
 use Symfony\Component\Validator\Constraints as Assert;
 use Symfony\Component\Validator\ConstraintViolationList;
 use Symfony\Component\Validator\Validator;
@@ -62,6 +63,12 @@ class BatchCommand extends ContainerAwareCommand
                 null,
                 InputOption::VALUE_NONE,
                 'Don\'t display logs'
+            )
+            ->addOption(
+                'username',
+                null,
+                InputOption::VALUE_REQUIRED,
+                'Username'
             );
     }
 
@@ -96,6 +103,14 @@ class BatchCommand extends ContainerAwareCommand
         }
         $jobParameters = $jobParamsFactory->create($job, $rawParameters);
         $validator = $this->getValidator();
+
+        $username = $input->getOption('username');
+        if (null !== $username) {
+            $user = $this->getContainer()->get('oro_user.manager')->findUserByUsername($username);
+
+            $token = new UsernamePasswordToken($user, null, 'main', $user->getRoles());
+            $this->getContainer()->get('security.token_storage')->setToken($token);
+        }
 
         // Override mail notifier recipient email
         if ($email = $input->getOption('email')) {
