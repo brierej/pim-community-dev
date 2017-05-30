@@ -167,7 +167,9 @@ JSON;
 {"code": "attributeGroupB","sort_order": 8}
 JSON;
 
+        ob_start(function() { return ''; });
         $client->request('PATCH', '/api/rest/v1/attribute-groups', [], [], [], $data);
+        ob_end_flush();
 
         $response = $client->getResponse();
         $this->assertSame(Response::HTTP_OK, $response->getStatusCode());
