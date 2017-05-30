@@ -251,6 +251,37 @@ JSON;
         $this->assertJsonStringEqualsJsonString($expectedContent, $response->getContent());
     }
 
+    public function testResponseWhenChannelCategoryTreeIsMissing()
+    {
+        $client = $this->createAuthenticatedClient();
+
+        $data =
+<<<JSON
+    {
+        "code":"ecommerce_ch",
+        "currencies": ["EUR"],
+        "locales": ["fr_FR"]
+    }
+JSON;
+
+        $expectedContent =
+            <<<JSON
+{
+	"code": 422,
+	"message": "Validation failed.",
+	"errors": [{
+	    "property": "category_tree",
+	    "message": "This value should not be blank."
+	}]
+}
+JSON;
+        $client->request('POST', 'api/rest/v1/channels', [], [], [], $data);
+
+        $response = $client->getResponse();
+        $this->assertSame(Response::HTTP_UNPROCESSABLE_ENTITY, $response->getStatusCode());
+        $this->assertJsonStringEqualsJsonString($expectedContent, $response->getContent());
+    }
+
     /**
      * {@inheritdoc}
      */
